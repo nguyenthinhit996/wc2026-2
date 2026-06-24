@@ -1,0 +1,65 @@
+[
+  {
+    "player_id": "a7f3k9x2",
+    "match_id": "m001",
+    "predicted_result": "team1",
+    "predicted_score": "2-1",
+    "submitted_at": "2026-06-15T10:00:00+07:00"
+  },
+  {
+    "player_id": "b2m8p4q1",
+    "match_id": "m001",
+    "predicted_result": "team1",
+    "predicted_score": "3-0",
+    "submitted_at": "2026-06-15T11:00:00+07:00"
+  },
+  {
+    "player_id": "c5n1r7t3",
+    "match_id": "m001",
+    "predicted_result": "team2",
+    "predicted_score": "0-1",
+    "submitted_at": "2026-06-15T12:00:00+07:00"
+  },
+  {
+    "player_id": "d9w6y2u8",
+    "match_id": "m001",
+    "predicted_result": "draw",
+    "predicted_score": null,
+    "submitted_at": "2026-06-15T13:00:00+07:00"
+  },
+  {
+    "player_id": "a7f3k9x2",
+    "match_id": "m002",
+    "predicted_result": "draw",
+    "predicted_score": "1-1",
+    "submitted_at": "2026-06-15T20:00:00+07:00"
+  },
+  {
+    "player_id": "b2m8p4q1",
+    "match_id": "m002",
+    "predicted_result": "team1",
+    "predicted_score": "2-0",
+    "submitted_at": "2026-06-15T21:00:00+07:00"
+  },
+  {
+    "player_id": "c5n1r7t3",
+    "match_id": "m002",
+    "predicted_result": "draw",
+    "predicted_score": "0-0",
+    "submitted_at": "2026-06-15T22:00:00+07:00"
+  },
+  {
+    "player_id": "a7f3k9x2",
+    "match_id": "m003",
+    "predicted_result": "team1",
+    "predicted_score": "2-1",
+    "submitted_at": "2026-06-24T05:00:33.318Z"
+  },
+  {
+    "player_id": "a7f3k9x2",
+    "match_id": "wc49",
+    "predicted_result": "team1",
+    "predicted_score": "3-1",
+    "submitted_at": "2026-06-24T06:12:03.657Z"
+  }
+]

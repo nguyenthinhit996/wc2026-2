@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dự đoán · World Cup Predictor</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">⚽ WORLD CUP <span>PREDICTOR</span></div>
+    <div class="right">
+      <nav class="nav">
+        <a href="/player.html" class="active">Dự đoán</a>
+        <a href="/leaderboard.html">Xếp hạng</a>
+      </nav>
+      <span class="who">Xin chào, <b id="who">...</b></span>
+      <button class="ghost small" id="logout">Thoát</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="page-head">
+      <h1>Dự đoán của bạn</h1>
+      <p>Chọn cửa Thắng / Hòa / Thua. Đoán đúng cửa +1, đúng tỷ số chính xác +3. Dự đoán khóa khi bóng lăn.</p>
+      <div id="summary" class="vote-summary"></div>
+    </div>
+    <div class="tabs">
+      <button id="tabUpcoming" class="active">Sắp diễn ra</button>
+      <button id="tabPast">Đã qua</button>
+    </div>
+    <div id="list"></div>
+  </div>
+
+<script>
+let MATCHES = [], MYPREDS = {};
+
+function fmtTime(iso){
+  const d = new Date(iso);
+  return d.toLocaleString('vi-VN',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+function isLocked(m){ return new Date() >= new Date(m.kickoff_time); }
+
+async function load(){
+  const me = await fetch('/api/me');
+  if(!me.ok){ location.href='/'; return; }
+  const u = await me.json();
+  if(u.role==='admin'){ location.href='/admin.html'; return; }
+  document.getElementById('who').textContent = u.name;
+
+  const [mr, pr] = await Promise.all([
+    fetch('/api/matches'), fetch('/api/predictions/me')
+  ]);
+  const mdata = await mr.json();
+  MATCHES = mdata.matches;
+  const preds = await pr.json();
+  MYPREDS = {};
+  preds.forEach(p => MYPREDS[p.match_id] = p);
+  render();
+}
+
+let CURTAB = 'upcoming';
+
+function render(){
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  // tóm tắt: số trận còn mở đã/chưa bình chọn
+  const openMatches = MATCHES.filter(m => !(isLocked(m) || m.status==='finished'));
+  const votedOpen = openMatches.filter(m => MYPREDS[m.match_id]).length;
+  const notVoted = openMatches.length - votedOpen;
+  const sum = document.getElementById('summary');
+  if(openMatches.length){
+    sum.innerHTML = `<span class="chip voted">✓ Đã bình chọn: ${votedOpen}</span>`
+      + `<span class="chip notvoted">Chưa bình chọn: ${notVoted}</span>`
+      + (notVoted>0 ? `<span class="chip hint">Còn ${notVoted} trận đang mở chờ bạn dự đoán</span>` : `<span class="chip hint">Bạn đã dự đoán hết các trận đang mở 🎉</span>`);
+  } else {
+    sum.innerHTML = `<span class="chip hint">Hiện chưa có trận nào đang mở để bình chọn.</span>`;
+  }
+
+  // lọc theo tab
+  let shown;
+  if(CURTAB === 'upcoming'){
+    shown = MATCHES.filter(m => !(isLocked(m) || m.status==='finished'))
+                   .sort((a,b)=> new Date(a.kickoff_time) - new Date(b.kickoff_time));
+  } else {
+    // đã qua: mới nhất lên đầu
+    shown = MATCHES.filter(m => isLocked(m) || m.status==='finished')
+                   .sort((a,b)=> new Date(b.kickoff_time) - new Date(a.kickoff_time));
+  }
+
+  if(!shown.length){
+    list.innerHTML = `<div class="empty-state">${CURTAB==='upcoming'
+      ? 'Chưa có trận sắp diễn ra. Hãy quay lại sau khi ban tổ chức thêm lịch.'
+      : 'Chưa có trận nào đã qua.'}</div>`;
+    return;
+  }
+
+  let lastRound = null;
+  shown.forEach(m => {
+    if(m.round !== lastRound){
+      const rl = document.createElement('div');
+      rl.className = 'round-label';
+      rl.textContent = m.round || 'Trận đấu';
+      list.appendChild(rl);
+      lastRound = m.round;
+    }
+    list.appendChild(matchCard(m));
+  });
+}
+
+function setTab(tab){
+  CURTAB = tab;
+  document.getElementById('tabUpcoming').classList.toggle('active', tab==='upcoming');
+  document.getElementById('tabPast').classList.toggle('active', tab==='past');
+  render();
+}
+
+function matchCard(m){
+  const locked = isLocked(m) || m.status==='finished';
+  const mine = MYPREDS[m.match_id];
+  const el = document.createElement('div');
+  el.className = 'match' + (locked ? ' locked' : '');
+
+  const statusTag = m.status==='finished'
+    ? `<span class="status finished">Đã có kết quả</span>`
+    : (locked ? `<span class="status locked-tag">Đã khóa</span>`
+              : `<span class="status upcoming">Đang mở</span>`);
+
+  // badge cho biết đã bình chọn hay chưa
+  const voteTag = mine
+    ? `<span class="status voted">✓ Đã bình chọn</span>`
+    : (!locked ? `<span class="status notvoted">Chưa bình chọn</span>` : '');
+
+  const resultMap = {team1:m.team1, draw:'Hòa', team2:m.team2};
+  const actual = m.status==='finished'
+    ? `<div class="actual">Kết quả: ${resultMap[m.actual_result]||'?'}${m.actual_score?` (${m.actual_score})`:''}</div>` : '';
+
+  el.innerHTML = `
+    <div class="meta">
+      <span class="kickoff">🕑 ${fmtTime(m.kickoff_time)}</span>
+      <span class="tags">${voteTag}${statusTag}</span>
+    </div>
+    <div class="teams">
+      <span class="t">${m.team1}</span>
+      <span class="vs">VS</span>
+      <span class="t t2">${m.team2}</span>
+    </div>
+    ${actual}`;
+
+  if(!locked){
+    const pick = document.createElement('div');
+    pick.className = 'pick';
+    const opts = [['team1',m.team1],['draw','Hòa'],['team2',m.team2]];
+    opts.forEach(([val,label])=>{
+      const o = document.createElement('div');
+      o.className = 'opt' + (mine && mine.predicted_result===val ? ' sel':'');
+      o.textContent = label;
+      o.onclick = ()=>{ pick.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel')); o.classList.add('sel'); };
+      o.dataset.val = val;
+      pick.appendChild(o);
+    });
+    el.appendChild(pick);
+
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.innerHTML = `
+      <label>Tỷ số (tuỳ chọn):</label>
+      <input class="sc" placeholder="${m.team1.slice(0,3)}" value="${mine&&mine.predicted_score?mine.predicted_score.split('-')[0]:''}">
+      <span>-</span>
+      <input class="sc" placeholder="${m.team2.slice(0,3)}" value="${mine&&mine.predicted_score?mine.predicted_score.split('-')[1]:''}">
+      <button class="small save">Lưu</button>
+      <span class="saved-note" hidden>Đã lưu ✓</span>`;
+    el.appendChild(row);
+
+    const [s1,s2] = row.querySelectorAll('.sc');
+    row.querySelector('.save').onclick = ()=> savePred(m.match_id, pick, s1, s2, row);
+  } else if(mine){
+    const note = document.createElement('div');
+    note.className = 'score-row';
+    note.innerHTML = `<span class="muted">Bạn đã chọn: <b style="color:var(--chalk)">${resultMap[mine.predicted_result]}</b>${mine.predicted_score?` · tỷ số ${mine.predicted_score}`:''}</span>`;
+    el.appendChild(note);
+  }
+  return el;
+}
+
+async function savePred(matchId, pick, s1, s2, row){
+  const sel = pick.querySelector('.opt.sel');
+  if(!sel){ alert('Hãy chọn một cửa (Thắng/Hòa/Thua) trước.'); return; }
+  const a = s1.value.trim(), b = s2.value.trim();
+  let score = '';
+  if(a!=='' || b!==''){
+    if(!/^\d{1,2}$/.test(a) || !/^\d{1,2}$/.test(b)){ alert('Tỷ số phải là số, ví dụ 2 - 1.'); return; }
+    score = `${a}-${b}`;
+  }
+  const btn = row.querySelector('.save'); btn.disabled = true;
+  try{
+    const r = await fetch('/api/predictions',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({match_id:matchId,predicted_result:sel.dataset.val,predicted_score:score})
+    });
+    const d = await r.json();
+    if(!r.ok){ alert(d.error||'Lưu thất bại'); return; }
+    MYPREDS[matchId] = {predicted_result:sel.dataset.val, predicted_score:score||null};
+    const note = row.querySelector('.saved-note');
+    note.hidden = false; setTimeout(()=>note.hidden=true, 2000);
+  } finally { btn.disabled = false; }
+}
+
+document.getElementById('tabUpcoming').onclick = ()=> setTab('upcoming');
+document.getElementById('tabPast').onclick = ()=> setTab('past');
+document.getElementById('logout').onclick = async ()=>{
+  await fetch('/api/logout',{method:'POST'}); location.href='/';
+};
+load();
+</script>
+</body>
+</html>

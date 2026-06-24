@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xếp hạng · World Cup Predictor</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">⚽ WORLD CUP <span>PREDICTOR</span></div>
+    <div class="right">
+      <nav class="nav" id="nav"></nav>
+      <span class="who">Xin chào, <b id="who">...</b></span>
+      <button class="ghost small" id="logout">Thoát</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="page-head">
+      <h1>Bảng xếp hạng</h1>
+      <p>Tổng điểm từ các trận đã có kết quả. Đúng cửa +1, đúng tỷ số +3.</p>
+    </div>
+
+    <div class="tabs">
+      <button id="tabSeason" class="active">Cả mùa</button>
+      <button id="tabWeek">Theo tuần</button>
+      <select id="weekSel" style="width:auto;display:none"></select>
+    </div>
+
+    <div id="boardWrap"></div>
+  </div>
+
+<script>
+let CUR = 'season', WEEKS = [], CURWEEK = null, ROLE = 'player';
+
+async function init(){
+  const me = await fetch('/api/me');
+  if(!me.ok){ location.href='/'; return; }
+  const u = await me.json();
+  ROLE = u.role;
+  document.getElementById('who').textContent = u.name;
+  // nav khác nhau cho admin/player
+  document.getElementById('nav').innerHTML = ROLE==='admin'
+    ? `<a href="/admin.html">Quản trị</a><a href="/leaderboard.html" class="active">Xếp hạng</a>`
+    : `<a href="/player.html">Dự đoán</a><a href="/leaderboard.html" class="active">Xếp hạng</a>`;
+  loadBoard();
+}
+
+async function loadBoard(){
+  const q = CUR==='week' && CURWEEK ? `type=week&week=${CURWEEK}` : `type=${CUR}`;
+  const r = await fetch('/api/leaderboard?'+q);
+  const d = await r.json();
+  WEEKS = d.weeks || [];
+  // dựng dropdown tuần
+  const sel = document.getElementById('weekSel');
+  if(CUR==='week'){
+    sel.style.display = 'inline-block';
+    sel.innerHTML = WEEKS.length
+      ? WEEKS.map(w=>`<option value="${w}" ${w===CURWEEK?'selected':''}>${weekLabel(w)}</option>`).join('')
+      : `<option>Chưa có tuần nào</option>`;
+    if(!CURWEEK && WEEKS.length){ CURWEEK = currentWeek(WEEKS); return loadBoard(); }
+  } else sel.style.display='none';
+  renderTable(d.board);
+}
+
+// chọn tuần chứa hôm nay (mốc 11h trưa T6); nếu không có thì lấy tuần gần nhất đã qua
+function currentWeek(weeks){
+  const now = new Date();
+  // lùi 11h để mốc 11h trưa thành ranh giới, rồi quy về giờ VN
+  const shifted = new Date(now.getTime() + 7*3600*1000 - 11*3600*1000);
+  const day = new Date(Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate()));
+  const back = (day.getUTCDay() - 5 + 7) % 7;
+  const friday = new Date(day.getTime() - back*864e5);
+  const y = friday.getUTCFullYear();
+  const m = String(friday.getUTCMonth()+1).padStart(2,'0');
+  const dd = String(friday.getUTCDate()).padStart(2,'0');
+  const cur = `${y}-${m}-${dd}`;
+  if(weeks.includes(cur)) return cur;
+  const past = weeks.filter(w=>w<=cur);
+  return past.length ? past[past.length-1] : weeks[0];
+}
+
+function weekLabel(w){
+  // w = ngày Thứ 6 đầu tuần "YYYY-MM-DD". Tuần = 11h trưa T6 -> 11h trưa T6 tuần sau.
+  const fri = new Date(w + 'T00:00:00Z');
+  const thu = new Date(fri.getTime() + 7*864e5);
+  const f = dt => dt.getUTCDate() + '/' + (dt.getUTCMonth()+1);
+  return `Tuần ${f(fri)} 11h – ${f(thu)} 11h`;
+}
+
+function renderTable(board){
+  const wrap = document.getElementById('boardWrap');
+  if(!board || !board.length){
+    wrap.innerHTML = `<div class="panel"><p class="muted">Chưa có thành viên nào.</p></div>`;
+    return;
+  }
+  const allZero = board.every(b=>b.points===0);
+  const note = allZero
+    ? `<div class="board-note">Chưa có điểm nào ở ${CUR==='week'?'tuần này':'mùa giải'}. Bảng sẽ cập nhật khi có kết quả trận.</div>`
+    : '';
+  const rows = board.map(b=>`
+    <tr>
+      <td class="rank r${b.rank<=3?b.rank:''}">${rankIcon(b.rank)}</td>
+      <td class="player">${b.name}</td>
+      <td class="detail">${b.exact} tỷ số · ${b.correct} cửa</td>
+      <td class="pts">${b.points}</td>
+    </tr>`).join('');
+  wrap.innerHTML = note + `<table>
+    <thead><tr><th>Hạng</th><th>Thành viên</th><th style="text-align:right">Chi tiết</th><th style="text-align:right">Điểm</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+// icon hạng cho vui: huy chương top 3, rồi các icon ngộ nghĩnh theo vị trí
+function rankIcon(r){
+  if(r===1) return '🥇';
+  if(r===2) return '🥈';
+  if(r===3) return '🥉';
+  if(r===4) return '🎯';
+  if(r===5) return '⚽';
+  return `<span class="rank-num">${r}</span>`;
+}
+
+document.getElementById('tabSeason').onclick = ()=>{
+  CUR='season'; setActive('tabSeason'); loadBoard();
+};
+document.getElementById('tabWeek').onclick = ()=>{
+  CUR='week'; CURWEEK=null; setActive('tabWeek'); loadBoard();
+};
+document.getElementById('weekSel').onchange = e=>{ CURWEEK=e.target.value; loadBoard(); };
+function setActive(id){
+  document.getElementById('tabSeason').classList.toggle('active', id==='tabSeason');
+  document.getElementById('tabWeek').classList.toggle('active', id==='tabWeek');
+}
+document.getElementById('logout').onclick = async ()=>{
+  await fetch('/api/logout',{method:'POST'}); location.href='/';
+};
+init();
+</script>
+</body>
+</html>

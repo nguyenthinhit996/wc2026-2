@@ -1,0 +1,282 @@
+[
+  {
+    "match_id": "wc45",
+    "round": "Vòng bảng - Bảng K",
+    "team1": "Bồ Đào Nha",
+    "team2": "Uzbekistan",
+    "kickoff_time": "2026-06-24T00:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc46",
+    "round": "Vòng bảng - Bảng L",
+    "team1": "Anh",
+    "team2": "Ghana",
+    "kickoff_time": "2026-06-24T03:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc47",
+    "round": "Vòng bảng - Bảng L",
+    "team1": "Panama",
+    "team2": "Croatia",
+    "kickoff_time": "2026-06-24T06:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc48",
+    "round": "Vòng bảng - Bảng K",
+    "team1": "Colombia",
+    "team2": "CHDC Congo",
+    "kickoff_time": "2026-06-24T09:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc49",
+    "round": "Vòng bảng - Bảng B",
+    "team1": "Thuỵ Sĩ",
+    "team2": "Canada",
+    "kickoff_time": "2026-06-25T02:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc50",
+    "round": "Vòng bảng - Bảng B",
+    "team1": "Bosnia & Herzegovina",
+    "team2": "Qatar",
+    "kickoff_time": "2026-06-25T02:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc51",
+    "round": "Vòng bảng - Bảng C",
+    "team1": "Maroc",
+    "team2": "Haiti",
+    "kickoff_time": "2026-06-25T05:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc52",
+    "round": "Vòng bảng - Bảng C",
+    "team1": "Scotland",
+    "team2": "Brazil",
+    "kickoff_time": "2026-06-25T05:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc53",
+    "round": "Vòng bảng - Bảng A",
+    "team1": "Nam Phi",
+    "team2": "Hàn Quốc",
+    "kickoff_time": "2026-06-25T08:00:00",
+    "status": "finished",
+    "actual_result": "draw",
+    "actual_score": null
+  },
+  {
+    "match_id": "wc54",
+    "round": "Vòng bảng - Bảng A",
+    "team1": "CH Séc",
+    "team2": "Mexico",
+    "kickoff_time": "2026-06-25T08:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc55",
+    "round": "Vòng bảng - Bảng E",
+    "team1": "Curaçao",
+    "team2": "Bờ Biển Ngà",
+    "kickoff_time": "2026-06-26T03:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc56",
+    "round": "Vòng bảng - Bảng E",
+    "team1": "Ecuador",
+    "team2": "Đức",
+    "kickoff_time": "2026-06-26T03:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc57",
+    "round": "Vòng bảng - Bảng F",
+    "team1": "Tunisia",
+    "team2": "Hà Lan",
+    "kickoff_time": "2026-06-26T06:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc58",
+    "round": "Vòng bảng - Bảng F",
+    "team1": "Nhật Bản",
+    "team2": "Thuỵ Điển",
+    "kickoff_time": "2026-06-26T06:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc59",
+    "round": "Vòng bảng - Bảng D",
+    "team1": "Thổ Nhĩ Kỳ",
+    "team2": "Mỹ",
+    "kickoff_time": "2026-06-26T09:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc60",
+    "round": "Vòng bảng - Bảng D",
+    "team1": "Paraguay",
+    "team2": "Australia",
+    "kickoff_time": "2026-06-26T09:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc61",
+    "round": "Vòng bảng - Bảng I",
+    "team1": "Na Uy",
+    "team2": "Pháp",
+    "kickoff_time": "2026-06-27T02:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc62",
+    "round": "Vòng bảng - Bảng I",
+    "team1": "Senegal",
+    "team2": "Iraq",
+    "kickoff_time": "2026-06-27T02:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc63",
+    "round": "Vòng bảng - Bảng H",
+    "team1": "Cape Verde",
+    "team2": "Saudi Arabia",
+    "kickoff_time": "2026-06-27T07:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc64",
+    "round": "Vòng bảng - Bảng H",
+    "team1": "Uruguay",
+    "team2": "Tây Ban Nha",
+    "kickoff_time": "2026-06-27T07:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc65",
+    "round": "Vòng bảng - Bảng G",
+    "team1": "New Zealand",
+    "team2": "Bỉ",
+    "kickoff_time": "2026-06-27T10:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc66",
+    "round": "Vòng bảng - Bảng G",
+    "team1": "Ai Cập",
+    "team2": "Iran",
+    "kickoff_time": "2026-06-27T10:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc67",
+    "round": "Vòng bảng - Bảng L",
+    "team1": "Panama",
+    "team2": "Anh",
+    "kickoff_time": "2026-06-28T04:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc68",
+    "round": "Vòng bảng - Bảng L",
+    "team1": "Croatia",
+    "team2": "Ghana",
+    "kickoff_time": "2026-06-28T04:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc69",
+    "round": "Vòng bảng - Bảng K",
+    "team1": "Colombia",
+    "team2": "Bồ Đào Nha",
+    "kickoff_time": "2026-06-28T06:30:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc70",
+    "round": "Vòng bảng - Bảng K",
+    "team1": "CHDC Congo",
+    "team2": "Uzbekistan",
+    "kickoff_time": "2026-06-28T06:30:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc71",
+    "round": "Vòng bảng - Bảng J",
+    "team1": "Algeria",
+    "team2": "Áo",
+    "kickoff_time": "2026-06-28T09:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  },
+  {
+    "match_id": "wc72",
+    "round": "Vòng bảng - Bảng J",
+    "team1": "Jordan",
+    "team2": "Argentina",
+    "kickoff_time": "2026-06-28T09:00:00",
+    "status": "upcoming",
+    "actual_result": null,
+    "actual_score": null
+  }
+]
