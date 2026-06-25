@@ -43,7 +43,7 @@ function isLocked(match) {
 }
 
 /* ---------- Đã đủ thời gian để nhập kết quả chưa? ---------- */
-const RESULT_DELAY_MS = 3 * 3600 * 1000;
+const RESULT_DELAY_MS = 1 * 3600 * 1000;
 function canEnterResult(match) {
   return Date.now() >= new Date(match.kickoff_time).getTime() + RESULT_DELAY_MS;
 }
