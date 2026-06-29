@@ -51,11 +51,13 @@ function canEnterResult(match) {
 /* ---------- Chấm điểm 1 dự đoán ---------- */
 function scorePrediction(pred, match) {
   if (match.status !== 'finished' || !match.actual_result) return 0;
+  const ptsScore = match.pts_score ?? 3;
+  const ptsResult = match.pts_result ?? 1;
   if (pred.predicted_score && match.actual_score &&
       pred.predicted_score.trim() === match.actual_score.trim()) {
-    return 3;
+    return ptsScore;
   }
-  if (pred.predicted_result === match.actual_result) return 1;
+  if (pred.predicted_result === match.actual_result) return ptsResult;
   return 0;
 }
 
@@ -144,6 +146,16 @@ function validateMatch(m, idx) {
     errs.push(`Trận #${idx} (${m.match_id}): actual_result phải là team1/draw/team2`);
   if (m.actual_score && !/^\d{1,2}-\d{1,2}$/.test(m.actual_score.trim()))
     errs.push(`Trận #${idx} (${m.match_id}): actual_score sai định dạng (vd 2-1)`);
+  if (m.pts_result !== undefined && m.pts_result !== null) {
+    const v = Number(m.pts_result);
+    if (!Number.isFinite(v) || v < 0 || !Number.isInteger(v))
+      errs.push(`Trận #${idx} (${m.match_id}): pts_result phải là số nguyên không âm`);
+  }
+  if (m.pts_score !== undefined && m.pts_score !== null) {
+    const v = Number(m.pts_score);
+    if (!Number.isFinite(v) || v < 0 || !Number.isInteger(v))
+      errs.push(`Trận #${idx} (${m.match_id}): pts_score phải là số nguyên không âm`);
+  }
   return errs;
 }
 
@@ -281,7 +293,9 @@ app.post('/api/admin/match', requireAdmin, async (req, res) => {
     kickoff_time: normalizeVN(m.kickoff_time),
     status: m.status || 'upcoming',
     actual_result: m.actual_result || null,
-    actual_score: m.actual_score || null
+    actual_score: m.actual_score || null,
+    pts_result: (m.pts_result !== undefined && m.pts_result !== null) ? Number(m.pts_result) : null,
+    pts_score: (m.pts_score !== undefined && m.pts_score !== null) ? Number(m.pts_score) : null
   };
   const { error } = await supabase
     .from('matches')
@@ -322,7 +336,9 @@ app.post('/api/admin/import', requireAdmin, upload.single('file'), async (req, r
     kickoff_time: normalizeVN(m.kickoff_time),
     status: m.status || (m.actual_result ? 'finished' : 'upcoming'),
     actual_result: m.actual_result || null,
-    actual_score: m.actual_score || null
+    actual_score: m.actual_score || null,
+    pts_result: (m.pts_result !== undefined && m.pts_result !== null) ? Number(m.pts_result) : null,
+    pts_score: (m.pts_score !== undefined && m.pts_score !== null) ? Number(m.pts_score) : null
   }));
 
   const { error } = await supabase
