@@ -45,7 +45,9 @@
     "kickoff_time": "2026-07-05T02:00:00+07:00",
     "status": "upcoming",
     "actual_result": null,
-    "actual_score": null
+    "actual_score": null,
+    "pts_result": 1,
+    "pts_score": 3
   }
 ]</pre>
       <input type="file" id="importFile" accept="application/json,.json" style="margin-bottom:.8rem">
@@ -66,6 +68,8 @@
         <div><label>Đội 1</label><input id="f_t1" placeholder="Hà Lan"></div>
         <div><label>Đội 2</label><input id="f_t2" placeholder="Croatia"></div>
         <div><label>Giờ thi đấu</label><input id="f_time" type="datetime-local"></div>
+        <div><label>Điểm đúng cửa <span style="color:var(--muted);font-weight:400">(mặc định 1)</span></label><input id="f_pts_result" type="number" min="0" placeholder="1"></div>
+        <div><label>Điểm đúng tỷ số <span style="color:var(--muted);font-weight:400">(mặc định 3)</span></label><input id="f_pts_score" type="number" min="0" placeholder="3"></div>
       </div>
       <button id="addMatchBtn">Lưu cặp đấu</button>
       <p id="addNote" class="ok-note" hidden>Đã lưu ✓</p>
@@ -183,14 +187,19 @@ document.getElementById('addMatchBtn').onclick = async ()=>{
   if(!id||!t1||!t2||!time){ alert('Cần match_id, 2 đội và giờ thi đấu.'); return; }
   // datetime-local -> ISO kèm offset VN
   const iso = new Date(time).toISOString();
+  const body = {match_id:id,round,team1:t1,team2:t2,kickoff_time:iso};
+  const prVal = document.getElementById('f_pts_result').value;
+  const psVal = document.getElementById('f_pts_score').value;
+  if(prVal !== '') body.pts_result = Number(prVal);
+  if(psVal !== '') body.pts_score = Number(psVal);
   const r = await fetch('/api/admin/match',{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({match_id:id,round,team1:t1,team2:t2,kickoff_time:iso})
+    body:JSON.stringify(body)
   });
   const d = await r.json();
   if(!r.ok){ alert(d.error||'Lưu thất bại'); return; }
   const note=document.getElementById('addNote'); note.hidden=false; setTimeout(()=>note.hidden=true,2000);
-  ['f_id','f_round','f_t1','f_t2','f_time'].forEach(i=>document.getElementById(i).value='');
+  ['f_id','f_round','f_t1','f_t2','f_time','f_pts_result','f_pts_score'].forEach(i=>document.getElementById(i).value='');
   await loadMatches();
 };
 function val(id){ return document.getElementById(id).value.trim(); }
