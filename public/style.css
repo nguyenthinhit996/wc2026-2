@@ -152,6 +152,9 @@ input:focus,select:focus{outline:none;border-color:var(--gold)}
 .score-row input{width:80px;text-align:center;font-size:1.1rem}
 .score-row .save{margin-left:auto}
 .saved-note{color:var(--grass);font-size:.95rem;font-weight:700}
+.pts-badge{margin-left:auto;font-family:'Barlow Condensed';font-weight:700;letter-spacing:.5px;font-size:1rem;padding:.3rem .75rem;border-radius:999px}
+.pts-badge.hit{background:rgba(76,233,138,.22);color:var(--grass)}
+.pts-badge.miss{background:rgba(255,125,112,.2);color:var(--danger)}
 
 /* ---- Leaderboard ---- */
 .tabs{display:flex;gap:.6rem;margin-bottom:1.4rem}

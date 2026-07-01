@@ -177,7 +177,17 @@ function matchCard(m){
   } else if(mine){
     const note = document.createElement('div');
     note.className = 'score-row';
-    note.innerHTML = `<span class="muted">Bạn đã chọn: <b style="color:var(--chalk)">${resultMap[mine.predicted_result]}</b>${mine.predicted_score?` · tỷ số ${mine.predicted_score}`:''}</span>`;
+    let scoreBadge = '';
+    // Trận đã có kết quả -> hiện điểm rõ ràng để người chơi tự đối chiếu
+    if(m.status==='finished' && mine.points!=null){
+      if(mine.hit_type==='score')
+        scoreBadge = `<span class="pts-badge hit">✓ +${mine.points} · đúng tỷ số</span>`;
+      else if(mine.hit_type==='result')
+        scoreBadge = `<span class="pts-badge hit">✓ +${mine.points} · đúng cửa</span>`;
+      else
+        scoreBadge = `<span class="pts-badge miss">✗ 0 điểm</span>`;
+    }
+    note.innerHTML = `<span class="muted">Bạn đã chọn: <b style="color:var(--chalk)">${resultMap[mine.predicted_result]}</b>${mine.predicted_score?` · tỷ số ${mine.predicted_score}`:''}</span>${scoreBadge}`;
     el.appendChild(note);
   }
   return el;

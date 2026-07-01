@@ -80,8 +80,11 @@ async function computeLeaderboard(type, weekFilter) {
     if (!scores[pred.player_id]) continue;
     const pts = scorePrediction(pred, m);
     scores[pred.player_id].points += pts;
-    if (pts === 3) scores[pred.player_id].exact += 1;
-    else if (pts === 1) scores[pred.player_id].correct += 1;
+    // Đếm loại trúng dựa trên bản chất dự đoán (không so cứng 3/1)
+    const exactHit = pred.predicted_score && m.actual_score &&
+      pred.predicted_score.trim() === m.actual_score.trim();
+    if (exactHit) scores[pred.player_id].exact += 1;
+    else if (pred.predicted_result === m.actual_result) scores[pred.player_id].correct += 1;
   }
 
   const board = (players || []).map(p => ({
@@ -199,12 +202,25 @@ app.get('/api/matches', requireLogin, async (req, res) => {
 });
 
 app.get('/api/predictions/me', requireLogin, async (req, res) => {
-  const { data: preds, error } = await supabase
-    .from('predictions')
-    .select('*')
-    .eq('player_id', req.session.user.id);
+  const [{ data: preds, error }, { data: matches }] = await Promise.all([
+    supabase.from('predictions').select('*').eq('player_id', req.session.user.id),
+    supabase.from('matches').select('*')
+  ]);
   if (error) return res.status(500).json({ error: error.message });
-  res.json(preds);
+  const matchById = Object.fromEntries((matches || []).map(m => [m.match_id, m]));
+  // Gắn điểm + loại trúng cho mỗi dự đoán (chỉ với trận đã có kết quả)
+  const enriched = (preds || []).map(p => {
+    const m = matchById[p.match_id];
+    let points = null, hit_type = null;
+    if (m && m.status === 'finished' && m.actual_result) {
+      points = scorePrediction(p, m);
+      const exact = p.predicted_score && m.actual_score &&
+        p.predicted_score.trim() === m.actual_score.trim();
+      hit_type = exact ? 'score' : (p.predicted_result === m.actual_result ? 'result' : 'miss');
+    }
+    return { ...p, points, hit_type };
+  });
+  res.json(enriched);
 });
 
 app.post('/api/predictions', requireLogin, async (req, res) => {
@@ -266,7 +282,7 @@ app.post('/api/admin/result', requireAdmin, async (req, res) => {
   if (!m) return res.status(404).json({ error: 'Không tìm thấy trận' });
 
   if (!clear && !canEnterResult(m))
-    return res.status(400).json({ error: 'Chỉ được nhập kết quả sau khi trận bắt đầu ít nhất 3 giờ (đảm bảo trận đã kết thúc)' });
+    return res.status(400).json({ error: 'Chỉ được nhập kết quả sau khi trận bắt đầu ít nhất 1 giờ (đảm bảo trận đã kết thúc)' });
 
   const { error } = await supabase
     .from('matches')
